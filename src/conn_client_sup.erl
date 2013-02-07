@@ -20,7 +20,8 @@ start_link() ->
 %%% Supervisor callbacks
 %%%===================================================================
 init([]) ->
-    Child = {client, {client, start_link, []}, permanent, 5000, Type, [Mod]},
+    Child = {client, {client, start_link, []}, temporary, brutal_kill,
+        brutal_kill, [client]},
     RestartStrategy = {simple_one_for_one, 1, 0},
     {ok, {RestartStrategy, [Child]}}.
 
