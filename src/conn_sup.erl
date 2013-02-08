@@ -3,7 +3,7 @@
 -behaviour(supervisor).
 
 %% API
--export([start_link/0]).
+-export([start_link/1]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -14,15 +14,15 @@
 %%%===================================================================
 %%% API functions
 %%%===================================================================
-start_link() ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+start_link(LSock) ->
+    supervisor:start_link({local, ?MODULE}, ?MODULE, [LSock]).
 
 
 %%%===================================================================
 %%% Supervisor callbacks
 %%%===================================================================
-init([]) ->
-    AcceptorSup = {conn_acceptor_sup, {conn_acceptor_sup, start_link, []},
+init([LSock]) ->
+    AcceptorSup = {conn_acceptor_sup, {conn_acceptor_sup, start_link, [LSock]},
         permanent, 5000, supervisor, [conn_acceptor_sup]},
     ClientSup = {conn_client_sup, {conn_client_sup, start_link, []},
         permanent, 5000, supervisor, [conn_client_sup]},

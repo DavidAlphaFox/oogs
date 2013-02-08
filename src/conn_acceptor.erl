@@ -3,7 +3,7 @@
 -behaviour(gen_fsm).
 
 %% API
--export([start_link/0]).
+-export([start_link/1]).
 
 %% gen_fsm callbacks
 -export([init/1,
@@ -21,8 +21,8 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
-start_link() ->
-    gen_fsm:start_link(?MODULE, [], []).
+start_link(LSock) ->
+    gen_fsm:start_link(?MODULE, [LSock], []).
 
 
 %%%===================================================================
@@ -44,8 +44,7 @@ handle_event(_Event, StateName, State) ->
     {next_state, StateName, State}.
 
 handle_sync_event(_Event, _From, StateName, State) ->
-    Reply = ok,
-    {reply, Reply, StateName, State}.
+    {reply, ok, StateName, State}.
 
 handle_info(_Info, StateName, State) ->
     {next_state, StateName, State}.

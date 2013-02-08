@@ -32,9 +32,10 @@ start_link(Sock) ->
 %%% gen_fsm callbacks
 %%%===================================================================
 init([Sock]) ->
-    {ok, state_name, #state{sock = Sock}}.
+    {ok, connected, #state{sock = Sock}}.
 
-connected(_Event, State) ->
+connected({tcp, Sock, Data}, State) ->
+    gen_tcp:send(Sock, Data),
     {next_state, state_name, State}.
 
 lobby(_Event, State) ->

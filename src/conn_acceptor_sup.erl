@@ -3,7 +3,7 @@
 -behaviour(supervisor).
 
 %% API
--export([start_link/0, start_acceptor/1, start_muti_acceptor/2]).
+-export([start_link/1, start_acceptor/0, start_acceptor/1]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -14,25 +14,25 @@
 %%%===================================================================
 %%% API functions
 %%%===================================================================
-start_link() ->
-    supervisor:start_link({local, ?SUPERVISOR}, ?MODULE, []).
+start_link(LSock) ->
+    supervisor:start_link({local, ?SUPERVISOR}, ?MODULE, [LSock]).
 
-start_acceptor(LSock) ->
-    supervisor:start_child(?SUPERVISOR, [LSock]).
+start_acceptor() ->
+    supervisor:start_child(?SUPERVISOR, []).
 
-start_muti_acceptor(_LSock, 0) ->
+start_acceptor(0) ->
     ok;
 
-start_muti_acceptor(LSock, Num) ->
-    start_acceptor(LSock),
-    start_muti_acceptor(LSock, Num - 1).
+start_acceptor(Num) ->
+    start_acceptor(),
+    start_acceptor(Num - 1).
 
 
 %%%===================================================================
 %%% Supervisor callbacks
 %%%===================================================================
-init([]) ->
-    Child = {conn_acceptor, {conn_acceptor, start_link, []},
+init([LSock]) ->
+    Child = {conn_acceptor, {conn_acceptor, start_link, [LSock]},
         permanent, 5000, worker, [conn_acceptor]},
     RestartStrategy = {simple_one_for_one, 5, 1},
     {ok, {RestartStrategy, [Child]}}.
