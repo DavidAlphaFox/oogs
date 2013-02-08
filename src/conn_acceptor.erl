@@ -29,7 +29,7 @@ start_link(LSock) ->
 %%% gen_fsm callbacks
 %%%===================================================================
 init([LSock]) ->
-    {ok, state_name, #state{listen_sock = LSock}}.
+    {ok, accept, #state{listen_sock = LSock}}.
 
 accept(_Event, State) ->
     case gen_tcp:accept(State#state.listen_sock) of
