@@ -3,18 +3,21 @@
 -behaviour(gen_fsm).
 
 %% API
--export([start_link/0]).
+-export([start_link/1]).
 
 %% gen_fsm callbacks
 -export([init/1,
-         state_name/2,
-         state_name/3,
+         connected/2,
+         lobby/2,
+         playing/2,
+         connection_lost/2,
          handle_event/3,
          handle_sync_event/4,
          handle_info/3,
          terminate/3,
          code_change/4]).
 
+%% gen_fsm state
 -record(state, {sock}).
 
 
@@ -22,7 +25,7 @@
 %%% API
 %%%===================================================================
 start_link(Sock) ->
-    gen_fsm:start_link({local, ?MODULE}, ?MODULE, [Sock], []).
+    gen_fsm:start_link(?MODULE, [Sock], []).
 
 
 %%%===================================================================

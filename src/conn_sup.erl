@@ -8,6 +8,9 @@
 %% Supervisor callbacks
 -export([init/1]).
 
+-define(SUPERVISOR, ?MODULE).
+
+
 %%%===================================================================
 %%% API functions
 %%%===================================================================
@@ -23,7 +26,7 @@ init([]) ->
         permanent, 5000, supervisor, [conn_acceptor_sup]},
     ClientSup = {conn_client_sup, {conn_client_sup, start_link, []},
         permanent, 5000, supervisor, [conn_client_sup]},
-    RestartStrategy = {{one_for_one, 5, 10}},
+    RestartStrategy = {one_for_one, 5, 10},
     {ok, {RestartStrategy, [AcceptorSup, ClientSup]}}.
 
 

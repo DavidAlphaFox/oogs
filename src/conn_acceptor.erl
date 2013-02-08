@@ -14,14 +14,15 @@
          terminate/3,
          code_change/4]).
 
--record(state, {listen_socket}).
+%% gen_fsm state
+-record(state, {listen_sock}).
 
 
 %%%===================================================================
 %%% API
 %%%===================================================================
 start_link() ->
-    gen_fsm:start_link({local, ?MODULE}, ?MODULE, [], []).
+    gen_fsm:start_link(?MODULE, [], []).
 
 
 %%%===================================================================
@@ -31,11 +32,11 @@ init([LSock]) ->
     {ok, state_name, #state{listen_sock = LSock}}.
 
 accept(_Event, State) ->
-    case gen_tcp:accept(State#state.listen_socket) of
+    case gen_tcp:accept(State#state.listen_sock) of
         {ok, Sock} ->
 	    dispatch_connection(Sock),
 	    {next_state, accept, State};
-	Error ->
+	_Error ->
             {next_state, accept, State}
     end.
 
