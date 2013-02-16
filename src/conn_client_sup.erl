@@ -18,15 +18,15 @@ start_link() ->
     supervisor:start_link({local, ?SUPERVISOR}, ?MODULE, []).
 
 start_client(Sock) ->
-    supervisor:start_client(?SUPERVISOR, [Sock]).
+    supervisor:start_child(?SUPERVISOR, [Sock]).
 
 
 %%%===================================================================
 %%% Supervisor callbacks
 %%%===================================================================
 init([]) ->
-    Child = {client, {client, start_link, []}, temporary, brutal_kill,
-        worker, [client]},
+    Child = {conn_client, {conn_client, start_link, []}, temporary, brutal_kill,
+        worker, [conn_client]},
     RestartStrategy = {simple_one_for_one, 0, 1},
     {ok, {RestartStrategy, [Child]}}.
 

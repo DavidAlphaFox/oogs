@@ -29,9 +29,9 @@ start_link(LSock) ->
 %%% gen_fsm callbacks
 %%%===================================================================
 init([LSock]) ->
-    {ok, accept, #state{listen_sock = LSock}}.
+    {ok, accept, #state{listen_sock = LSock}, 0}.
 
-accept(_Event, State) ->
+accept(timeout, State) ->
     case gen_tcp:accept(State#state.listen_sock) of
         {ok, Sock} ->
 	    dispatch_connection(Sock),
@@ -62,7 +62,14 @@ code_change(_OldVsn, StateName, State, _Extra) ->
 dispatch_connection(Sock) ->
     case conn_client_sup:start_client(Sock) of
         {ok, Pid} ->
-	    gen_tcp:controlling_process(Sock, Pid);
+	    case gen_tcp:controlling_process(Sock, Pid) of
+	        ok ->
+		    ok;
+		Error ->
+		    gen_tcp:close(Sock),
+		    Error
+	    end;
 	Error ->
+	    gen_tcp:close(Sock),
 	    Error
     end.

@@ -34,9 +34,8 @@ start_link(Sock) ->
 init([Sock]) ->
     {ok, connected, #state{sock = Sock}}.
 
-connected({tcp, Sock, Data}, State) ->
-    gen_tcp:send(Sock, Data),
-    {next_state, state_name, State}.
+connected(_Event, State) ->
+    {next_state, connected, State}.
 
 lobby(_Event, State) ->
     {next_state, state_name, State}.
@@ -53,6 +52,10 @@ handle_event(_Event, StateName, State) ->
 handle_sync_event(_Event, _From, StateName, State) ->
     Reply = ok,
     {reply, Reply, StateName, State}.
+
+handle_info({tcp, Sock, Data}, StateName, State) ->
+    gen_tcp:send(Sock, Data),
+    {next_state, StateName, State};
 
 handle_info(_Info, StateName, State) ->
     {next_state, StateName, State}.
