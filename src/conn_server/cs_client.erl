@@ -1,4 +1,4 @@
--module(conn_client).
+-module(cs_client).
 
 -behaviour(gen_fsm).
 

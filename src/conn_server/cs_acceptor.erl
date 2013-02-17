@@ -1,4 +1,4 @@
--module(conn_acceptor).
+-module(cs_acceptor).
 
 -behaviour(gen_fsm).
 
@@ -60,7 +60,7 @@ code_change(_OldVsn, StateName, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 dispatch_connection(Sock) ->
-    case conn_client_sup:start_client(Sock) of
+    case cs_client_sup:start_client(Sock) of
         {ok, Pid} ->
 	    case gen_tcp:controlling_process(Sock, Pid) of
 	        ok ->

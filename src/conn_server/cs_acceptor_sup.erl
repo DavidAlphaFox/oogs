@@ -1,9 +1,9 @@
--module(conn_client_sup).
+-module(cs_acceptor_sup).
 
 -behaviour(supervisor).
 
 %% API
--export([start_link/0, start_client/1]).
+-export([start_link/1, start_acceptor/0, start_acceptor/1]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -14,21 +14,29 @@
 %%%===================================================================
 %%% API functions
 %%%===================================================================
-start_link() ->
-    supervisor:start_link({local, ?SUPERVISOR}, ?MODULE, []).
+start_link(LSock) ->
+    supervisor:start_link({local, ?SUPERVISOR}, ?MODULE, [LSock]).
 
-start_client(Sock) ->
-    supervisor:start_child(?SUPERVISOR, [Sock]).
+start_acceptor() ->
+    supervisor:start_child(?SUPERVISOR, []).
+
+start_acceptor(0) ->
+    ok;
+
+start_acceptor(Num) ->
+    start_acceptor(),
+    start_acceptor(Num - 1).
 
 
 %%%===================================================================
 %%% Supervisor callbacks
 %%%===================================================================
-init([]) ->
-    Child = {conn_client, {conn_client, start_link, []}, temporary, brutal_kill,
-        worker, [conn_client]},
-    RestartStrategy = {simple_one_for_one, 0, 1},
+init([LSock]) ->
+    Child = {cs_acceptor, {cs_acceptor, start_link, [LSock]},
+        permanent, 5000, worker, [cs_acceptor]},
+    RestartStrategy = {simple_one_for_one, 5, 1},
     {ok, {RestartStrategy, [Child]}}.
+
 
 %%%===================================================================
 %%% Internal functions

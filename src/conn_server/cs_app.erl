@@ -1,4 +1,4 @@
--module(conn_app).
+-module(cs_app).
 
 -behaviour(application).
 
@@ -13,8 +13,8 @@
 start(_StartType, [Port, AcceptorNum]) ->
     case gen_tcp:listen(Port, []) of
         {ok, LSock} ->
-            {ok, Pid} = conn_sup:start_link(LSock),
-            conn_acceptor_sup:start_acceptor(AcceptorNum),
+            {ok, Pid} = cs_sup:start_link(LSock),
+            ok = cs_acceptor_sup:start_acceptor(AcceptorNum),
 	    {ok, Pid};
 	Error ->
 	    Error
