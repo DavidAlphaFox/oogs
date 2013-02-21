@@ -1,3 +1,2 @@
-*.beam
-*.o
+ebin/*
 *.swp
